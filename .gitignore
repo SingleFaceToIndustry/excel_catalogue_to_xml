@@ -1,0 +1,5 @@
+lambda_functions.py
+package_for_lambda.bat
+.idea/
+__pycache__/
+tests/
