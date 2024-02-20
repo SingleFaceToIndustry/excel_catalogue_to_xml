@@ -15,6 +15,9 @@
  """
 import openpyxl
 import re
+import xml.etree.ElementTree as el_sbdh_tree
+import uuid
+from datetime import datetime
 
 
 def load_code_list(wb, col_range):
@@ -202,5 +205,45 @@ def check_spreadsheet_consistency(wb: openpyxl.Workbook):
             # Check if the cell value matches the column index
             if str(cell.value) != str(col_idx):
                 raise ValueError(f"Column index not correct for column {str(col_idx)}. Ensure that the SFTI template has not been altered with.")
+
+
+def add_to_sbdh(catalogue, sender_id_scheme: str, sender_id: str, receiver_id_scheme: str, receiver_id: str, sender_countrycode: str):
+
+    sbdh = el_sbdh_tree.Element("StandardBusinessDocument")
+    sbdh.set("xmlns", "http://www.unece.org/cefact/namespaces/StandardBusinessDocumentHeader")
+
+    h = el_sbdh_tree.SubElement(sbdh, "StandardBusinessDocumentHeader")
+    add_element(el_sbdh_tree,h,"HeaderVersion","1.0")
+    e = el_sbdh_tree.SubElement(h, "Sender")
+    e = add_element(el_sbdh_tree,e ,"Identifier",f"{sender_id_scheme}:{sender_id}")
+    add_attribute(e, "Authority", "iso6523-actorid-upis")
+    e = el_sbdh_tree.SubElement(h, "Receiver")
+    e = add_element(el_sbdh_tree, e,"Identifier",f"{receiver_id_scheme}:{receiver_id}")
+    add_attribute(e, "Authority", "iso6523-actorid-upis")
+    d = el_sbdh_tree.SubElement(h, "DocumentIdentification")
+    e = add_element(el_sbdh_tree, d, "Standard", "urn:oasis:names:specification:ubl:schema:xsd:Catalogue-2")
+    e = add_element(el_sbdh_tree, d, "TypeVersion", "2.1")
+    e = add_element(el_sbdh_tree, d, "InstanceIdentifier", str(uuid.uuid4()))
+    e = add_element(el_sbdh_tree, d, "Type", "Catalogue")
+    e = add_element(el_sbdh_tree, d, "CreationDateAndTime", datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"))
+    b = el_sbdh_tree.SubElement(h, "BusinessScope")
+    bs = el_sbdh_tree.SubElement(b, "Scope")
+    e = add_element(el_sbdh_tree, bs, "Type", "DOCUMENTID")
+    e = add_element(el_sbdh_tree, bs, "InstanceIdentifier", "urn:oasis:names:specification:ubl:schema:xsd:Catalogue-2::Catalogue##urn:fdc:peppol.eu:poacc:trns:catalogue:3::2.1")
+    e = add_element(el_sbdh_tree, bs, "Identifier","busdox-docid-qns")
+
+    bs = el_sbdh_tree.SubElement(b, "Scope")
+    e = add_element(el_sbdh_tree, bs, "Type", "PROCESSID")
+    e = add_element(el_sbdh_tree, bs, "InstanceIdentifier", "urn:fdc:peppol.eu:poacc:bis:catalogue_wo_response:3")
+    e = add_element(el_sbdh_tree, bs, "Identifier","cenbii-procid-ubl")
+
+    bs = el_sbdh_tree.SubElement(b, "Scope")
+    e = add_element(el_sbdh_tree, bs, "Type", "COUNTRY_C1")
+    e = add_element(el_sbdh_tree, bs, "InstanceIdentifier", sender_countrycode)
+
+    sbdh.append(catalogue)
+
+    return sbdh
+
 
 
