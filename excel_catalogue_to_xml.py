@@ -530,7 +530,13 @@ def excel_to_xml(excel_file, max_line_items=None) -> str:
             c = add_element(el_tree, cac, "cbc:MaximumMeasure", str(row[col_index(config, "DIMENSION_ATTR_AAO_MAX_MEASURE")].value))
             add_attribute(c, "unitCode", "P1")
 
+    if str(sheet_header[header_cell(config, "USE_SBDH")].value) == "JA":
+        root = add_to_sbdh(root, str(sheet_header[header_cell(config, "PROVIDER_SUPPLIER_ENDPOINT_ID_SCHEMEID")].value),
+                           str(sheet_header[header_cell(config, "PROVIDER_SUPPLIER_ENDPOINT_ID")].value),
+                           str(sheet_header[header_cell(config, "RECEIVER_BUYER_ENDPOINT_ID_SCHEMEID")].value),
+                           str(sheet_header[header_cell(config, "RECEIVER_BUYER_ENDPOINT_ID")].value),
+                           get_code(str(sheet_header[header_cell(config, "PROVIDER_SBDH_COUNTRYCODE")].value), country_codes))
+
     return el_tree.tostring(root, encoding="utf-8", xml_declaration=True).decode("utf-8")
-    #return el_tree.tostring(root, encoding="unicode")
 
 

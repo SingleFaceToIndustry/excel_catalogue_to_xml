@@ -9,7 +9,8 @@ It's designed to facilitate the simple way of creating standardized XML catalogu
 
 - **Conversion of Excel to XML:** Supports converting an Excel file to XML format following the Peppol BIS Catalogue specifications.
 - **Flexible Input Options:** Accepts both file paths and byte arrays of Excel files as input.
-- **Maximum Line Configuration:** Allows setting a maximum number of lines to be processed from the Excel file.
+- **Maximum Number of Line Configuration:** Allows setting a maximum number of lines to be processed from the Excel file.
+- **Enveloping in Peppol SBDH:** Chose by a setting in the Excel spreadsheet template
 
 ## Prerequisites
 
