@@ -87,7 +87,7 @@ def col_index(config, name):
 def add_element(el_tree, parent_element, element_name: str, element_value: str):
     if not is_cell_empty(element_value):
         c = el_tree.SubElement(parent_element, element_name)
-        c.text = element_value
+        c.text = str(element_value)
         return c
 
 
@@ -169,7 +169,7 @@ def get_code(key, codelist, alternate_field=None) -> str:
 
 
 def is_cell_empty(value: str) -> bool:
-    return normalize_space(value) == "" or value == "None"
+    return normalize_space(str(value)) == "" or value == "None"
 
 
 def normalize_space(s: str) -> str:
